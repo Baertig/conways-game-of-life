@@ -1,0 +1,26 @@
+{
+  "name": "conways-game-of-life",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "jest",
+    "init": "jest --init"
+  },
+  "dependencies": {
+    "vue": "^3.2.25"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@vitejs/plugin-vue": "^2.0.0",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.3",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2",
+    "vite-plugin-windicss": "^1.6.3",
+    "vue-tsc": "^0.29.8",
+    "windicss": "^3.4.3"
+  }
+}
