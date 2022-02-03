@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { createGameBoardArrayFromSize, xAndYPositionFromTotalIndexAndSize } from "../composables/gameOfLife"
+import { createGameBoardArrayFromSize, xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composables/gameOfLife"
 
 const props = defineProps<{
   size: number
 }>()
-const gameBoard = ref(createGameBoardArrayFromSize(10));
+// const gameBoard = ref(createGameBoardArrayFromSize(10));
+const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
 const cssGridRows = {
   "grid-template-columns": "repeat(" + gameBoard.value.length + ",min-content)"
 }
@@ -22,11 +23,15 @@ const toggleElement = (_: MouseEvent, index: number) => {
 </script>
 
 <template>
-  <div class="grid justify-center gap-2 auto-rows-fr" :style="cssGridRows">
+  <div class="m-2">
+    <button @click="calculateNextBoard" class="bg-gray-300 border-black m-2">next step</button>
+    <button @click="() => reset()" class="bg-gray-300 border-black m-2">reset</button>
+  </div>
+  <div class="grid justify-center gap-1 auto-rows-fr" :style="cssGridRows">
     <div
       v-for="(value, index) in gameBoard.flat()"
       key="index"
-      class="w-10 h-10"
+      class="w-10 h-10 rounded-sm"
       :class="value === 1 ? 'bg-red-700' : 'bg-blue-700'"
       @click="toggleElement($event, index)"
     ></div>

@@ -1,3 +1,5 @@
+import { ref, Ref } from "vue";
+
 export function createGameBoardArrayFromSize(size: number): number[][] {
   return new Array(size).fill(new Array(size).fill(0));
 }
@@ -47,9 +49,42 @@ export function willCellPopulate(
   pos: { x: number; y: number }
 ): boolean {
   const neighbours = numberOfLivingNeighbours(board, pos);
-  console.log(`neighbours=${neighbours}`);
+  if (pos.x === 4 && pos.y === 4) {
+    console.log(`[4,4] neighbours=${neighbours}`);
+  }
   if (neighbours === 3) {
     return true;
   }
   return false;
+}
+
+export function useGameOfLife(size: number) {
+  const gameBoard = ref(createGameBoardArrayFromSize(size));
+  const boardSize = size;
+
+  function reset(size = boardSize) {
+    gameBoard.value = createGameBoardArrayFromSize(size);
+  }
+
+  function calculateNextBoard() {
+    const ymax = gameBoard.value.length;
+    const xmax = gameBoard.value[0].length;
+    const newBoard = [];
+    for (let y = 0; y < ymax; y++) {
+      const row = [...gameBoard.value[y]];
+      for (let x = 0; x < xmax; x++) {
+        if (row[x] === 0) {
+          row[x] = willCellPopulate(gameBoard.value, { x, y }) ? 1 : 0;
+        } else if (row[x] === 1) {
+          row[x] = doesCellSurvive(gameBoard.value, { x, y }) ? 1 : 0;
+        } else {
+          console.error(`Unexpected Value in GameBoard: ${row[x]}`);
+        }
+      }
+      newBoard.push(row);
+    }
+    gameBoard.value = newBoard;
+  }
+
+  return { gameBoard, calculateNextBoard, reset };
 }

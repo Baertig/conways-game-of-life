@@ -1,3 +1,5 @@
+import { ref } from "vue";
+
 const gameOfLife = require("../src/composables/gameOfLife");
 
 test("initialze Array with size 4", () => {
@@ -56,6 +58,28 @@ test("cell with 3 neighbours and 2 non related", () => {
   expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(3);
 });
 
+test("row of 3 number of Living neighbours middle", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 2, y: 2 };
+  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(2);
+});
+
+test("row of 3 number of Living neighbours side", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 1, y: 2 };
+  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(3);
+});
+
 test("cell dies from solitude(only on neighbour)", () => {
   const board = [
     [1, 0, 0, 0],
@@ -89,6 +113,17 @@ test("cell dies from overpopulation (5 neighbours)", () => {
   expect(gameOfLife.doesCellSurvive(board, position)).toBe(false);
 });
 
+test("does cell survive row of 3 middle", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 2, y: 2 };
+  expect(gameOfLife.doesCellSurvive(board, position)).toBe(true);
+});
+
 test("cell populates (3 neighbours)", () => {
   const board = [
     [0, 0, 0, 0],
@@ -109,4 +144,34 @@ test("cell is not pupulated (0 neigbours)", () => {
   ];
   const position = { x: 1, y: 0 };
   expect(gameOfLife.willCellPopulate(board, position)).toBe(false);
+});
+
+test("row of 3 will Cell Populate side", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 1, y: 2 };
+  expect(gameOfLife.willCellPopulate(board, position)).toBe(true);
+});
+
+test("useGameBoard simple Row of Three", () => {
+  const startBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+  const endBoard = [
+    [0, 0, 0, 0],
+    [0, 1, 1, 1],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  const { gameBoard, calculateNextBoard } = gameOfLife.useGameOfLife(4);
+  gameBoard.value = startBoard;
+  calculateNextBoard();
+  expect(gameBoard.value).toEqual(endBoard);
 });

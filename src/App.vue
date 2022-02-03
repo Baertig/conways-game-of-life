@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {ref} from "vue"
 import GameOfLifeVue from "./components/GameOfLife.vue";
-const count = ref(0)
 </script>
 
 <template>
-  <div>Hey</div>
-  <GameOfLifeVue :size="10"/>
+  <h1>Conway Game of Life</h1>
+  <GameOfLifeVue :size="20" />
 </template>
 
 <style>
