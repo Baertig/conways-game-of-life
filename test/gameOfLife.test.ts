@@ -1,5 +1,3 @@
-import { ref } from "vue";
-
 const gameOfLife = require("../src/composables/gameOfLife");
 
 test("initialze Array with size 4", () => {

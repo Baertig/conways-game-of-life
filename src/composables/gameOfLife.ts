@@ -49,9 +49,6 @@ export function willCellPopulate(
   pos: { x: number; y: number }
 ): boolean {
   const neighbours = numberOfLivingNeighbours(board, pos);
-  if (pos.x === 4 && pos.y === 4) {
-    console.log(`[4,4] neighbours=${neighbours}`);
-  }
   if (neighbours === 3) {
     return true;
   }

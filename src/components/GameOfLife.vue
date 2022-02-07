@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { createGameBoardArrayFromSize, xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composables/gameOfLife"
+import { computed, watchEffect } from "vue";
+import { xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composables/gameOfLife"
 
 const props = defineProps<{
-  size: number
+  size: number,
 }>()
-// const gameBoard = ref(createGameBoardArrayFromSize(10));
+
 const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
-const cssGridRows = {
+
+watchEffect(() => {
+  reset(props.size);
+})
+
+const cssGridRows = computed(() => ({
   "grid-template-columns": "repeat(" + gameBoard.value.length + ",min-content)"
-}
-//TODO
-// make square red if is clicked
+}));
+
 const toggleElement = (_: MouseEvent, index: number) => {
   const { x, y } = xAndYPositionFromTotalIndexAndSize(index, props.size);
   const oldValue = gameBoard.value[y][x]
@@ -25,7 +29,7 @@ const toggleElement = (_: MouseEvent, index: number) => {
 <template>
   <div class="m-2">
     <button @click="calculateNextBoard" class="bg-gray-300 border-black m-2">next step</button>
-    <button @click="() => reset()" class="bg-gray-300 border-black m-2">reset</button>
+    <button @click="() => reset(props.size)" class="bg-gray-300 border-black m-2">reset</button>
   </div>
   <div class="grid justify-center gap-1 auto-rows-fr" :style="cssGridRows">
     <div
