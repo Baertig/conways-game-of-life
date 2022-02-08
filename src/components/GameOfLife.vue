@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watchEffect } from "vue";
+import { computed, reactive, ref, watch, watchEffect } from "vue";
 import { xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composables/gameOfLife"
 
 const props = defineProps<{
@@ -24,12 +24,30 @@ const toggleElement = (_: MouseEvent, index: number) => {
   row[x] = oldValue === 1 ? 0 : 1
   gameBoard.value[y] = row;
 }
+
+const gameOfLifeIsRunning = ref(false);
+let gameOfLifeRunningIntervalId: ReturnType<typeof setInterval>;
+watch(gameOfLifeIsRunning, (newGameOfLifeIsRunning, oldvalue) => {
+  if (newGameOfLifeIsRunning) {
+    gameOfLifeRunningIntervalId = setInterval(calculateNextBoard, 500);
+  } else {
+    clearInterval(gameOfLifeRunningIntervalId)
+  }
+})
 </script>
 
 <template>
-  <div class="m-2">
-    <button @click="calculateNextBoard" class="bg-gray-300 border-black m-2">next step</button>
-    <button @click="() => reset(props.size)" class="bg-gray-300 border-black m-2">reset</button>
+  <div class="m-2 flex flex-row justify-center">
+    <button @click="calculateNextBoard" class="btn">next step</button>
+    <button @click="() => reset(props.size)" class="btn">reset</button>
+    <button @click="gameOfLifeIsRunning = !gameOfLifeIsRunning" class="btn">
+      <svg height="20" width="20" viewBox="0 0 10 10">
+        <polygon v-if="gameOfLifeIsRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
+        <polygon v-if="gameOfLifeIsRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
+
+        <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
+      </svg>
+    </button>
   </div>
   <div class="grid justify-center gap-1 auto-rows-fr" :style="cssGridRows">
     <div

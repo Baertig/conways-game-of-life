@@ -14,11 +14,10 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
 </script>
 
 <template>
-  <h1>Conway Game of Life</h1>
-  <div>
-    <span class="mr-2">Size</span>
+  <h1 class="text-3xl">Conway Game of Life</h1>
+  <div class="flex flex-row justify-center">
+    <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
     <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
-    <span class="ml-2">{{ gameBoardSize }}</span>
   </div>
   <GameOfLifeVue :size="gameBoardSize" />
 </template>
@@ -30,6 +29,5 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
