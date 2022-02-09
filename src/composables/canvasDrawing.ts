@@ -25,7 +25,7 @@ export function drawGrid(
   ctx?.stroke();
 }
 
-function calculateLinePointsForGrid(
+export function calculateLinePointsForGrid(
   width: number,
   height: number,
   x_gap: number,
