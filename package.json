@@ -9,7 +9,8 @@
     "init": "jest --init"
   },
   "dependencies": {
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.12"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, WritableComputedRef } from "vue";
-import GameOfLifeVue from "./components/GameOfLife.vue";
 
 const gameBoardSize = ref(20);
 const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
@@ -14,12 +13,16 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
 </script>
 
 <template>
-  <h1 class="text-3xl">Conway Game of Life</h1>
+  <div class="flex flex-row justify-center bg-blue-300 p-2">
+    <h1 class="text-3xl mr-2">Conway Game of Life</h1>
+    <router-link class="mr-2 self-end" to="/">Normal Game</router-link>
+    <router-link class="self-end" to="/canvas">Canvas Game</router-link>
+  </div>
   <div class="flex flex-row justify-center">
     <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
     <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
   </div>
-  <GameOfLifeVue :size="gameBoardSize" />
+  <router-view :size="gameBoardSize"></router-view>
 </template>
 
 <style>
@@ -27,7 +30,8 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+}
+.router-link-active {
+  text-decoration: underline;
 }
 </style>
