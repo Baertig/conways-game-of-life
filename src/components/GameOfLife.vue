@@ -4,12 +4,23 @@ import { xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composable
 
 const props = defineProps<{
   size: number,
+  isGameOfLifeRunning: boolean,
+  resetFlag: boolean,
+  nextStepFlag: boolean
 }>()
 
 const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
 
 watchEffect(() => {
+  console.log("reset Standard")
+  props.resetFlag
   reset(props.size);
+})
+
+watch(() => props.nextStepFlag, (_, __) => {
+  console.log("next Step Standard")
+  props.nextStepFlag
+  calculateNextBoard()
 })
 
 const cssGridRows = computed(() => ({
@@ -25,30 +36,18 @@ const toggleElement = (_: MouseEvent, index: number) => {
   gameBoard.value[y] = row;
 }
 
-const gameOfLifeIsRunning = ref(false);
 let gameOfLifeRunningIntervalId: ReturnType<typeof setInterval>;
-watch(gameOfLifeIsRunning, (newGameOfLifeIsRunning, oldvalue) => {
-  if (newGameOfLifeIsRunning) {
+watchEffect(() => {
+  if (props.isGameOfLifeRunning) {
     gameOfLifeRunningIntervalId = setInterval(calculateNextBoard, 500);
   } else {
     clearInterval(gameOfLifeRunningIntervalId)
   }
+
 })
 </script>
 
 <template>
-  <div class="m-2 flex flex-row justify-center">
-    <button @click="calculateNextBoard" class="btn">next step</button>
-    <button @click="() => reset(props.size)" class="btn">reset</button>
-    <button @click="gameOfLifeIsRunning = !gameOfLifeIsRunning" class="btn">
-      <svg height="20" width="20" viewBox="0 0 10 10">
-        <polygon v-if="gameOfLifeIsRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
-        <polygon v-if="gameOfLifeIsRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
-
-        <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
-      </svg>
-    </button>
-  </div>
   <div class="grid justify-center gap-1 auto-rows-fr" :style="cssGridRows">
     <div
       v-for="(value, index) in gameBoard.flat()"

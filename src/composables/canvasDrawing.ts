@@ -13,7 +13,10 @@ function isCanvasOrCtxNull(canvas: HTMLCanvasElement | null) {
   return canvas === null || canvas.getContext("2d") === null;
 }
 
-export function calculateGameBoardToCanvasFaktor(canvas: HTMLCanvasElement | null, gameBoard: number[][]) {
+export function calculateGameBoardToCanvasFaktor(
+  canvas: HTMLCanvasElement | null,
+  gameBoard: number[][]
+) {
   if (isCanvasOrCtxNull(canvas)) {
     console.warn("canvas or Context was null could not calclulate gameBoardToCanvasFaktor");
     return {
@@ -26,6 +29,14 @@ export function calculateGameBoardToCanvasFaktor(canvas: HTMLCanvasElement | nul
     horizontal: Math.floor(canvas.width / gameBoard[0].length),
     vertical: Math.floor(canvas.height / gameBoard.length),
   };
+}
+export function clearCanvas(canvas: HTMLCanvasElement | null) {
+  if (isCanvasOrCtxNull(canvas)) {
+    return;
+  }
+  canvas = canvas as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 export function drawGameOfLifeOnCanvas(canvas: HTMLCanvasElement | null, gameBoard: number[][]) {
   if (isCanvasOrCtxNull(canvas)) {
@@ -45,13 +56,17 @@ export function drawGameOfLifeOnCanvas(canvas: HTMLCanvasElement | null, gameBoa
       if (gameBoard[y][x] === 1) {
         const canvasX = x * gameBoardToCanvasFaktor.horizontal;
         const canvasY = y * gameBoardToCanvasFaktor.vertical;
-        ctx.fillRect(canvasX, canvasY, gameBoardToCanvasFaktor.horizontal, gameBoardToCanvasFaktor.vertical);
+        ctx.fillRect(
+          canvasX,
+          canvasY,
+          gameBoardToCanvasFaktor.horizontal,
+          gameBoardToCanvasFaktor.vertical
+        );
       }
   }
   ctx.stroke();
 }
 
 function setup(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "black";
 }

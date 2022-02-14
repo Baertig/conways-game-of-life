@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, Ref, ref, watch, watchEffect } from 'vue';
 import { useGameOfLife } from "../composables/gameOfLife"
-import { drawGameOfLifeOnCanvas, calculateGameBoardToCanvasFaktor } from '../composables/canvasDrawing';
+import { drawGameOfLifeOnCanvas, calculateGameBoardToCanvasFaktor, clearCanvas } from '../composables/canvasDrawing';
 import { useMousePositionOnCanvas } from '../composables/MouseUtil';
 
 const props = defineProps<{
     size: number,
+    isGameOfLifeRunning: boolean
+    resetFlag: boolean,
+    nextStepFlag: boolean
 }>()
+
 
 const canvas: Ref<null | HTMLCanvasElement> = ref(null)
 
@@ -14,13 +18,13 @@ const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
 const MousePosCanvas = useMousePositionOnCanvas(canvas);
 const gameBoardToCanvasFaktor = computed(() => calculateGameBoardToCanvasFaktor(canvas.value, gameBoard.value))
 
-const drawGameOfLife = () => {
+const drawGameBoard = () => {
+    clearCanvas(canvas.value);
+    drawMousePos();
     drawGameOfLifeOnCanvas(canvas.value, gameBoard.value);
 }
 
-watchEffect(() => {
-    reset(props.size)
-})
+
 
 const drawMousePos = () => {
     if (MousePosCanvas.x.value < 0 || MousePosCanvas.y.value < 0) {
@@ -33,7 +37,6 @@ const drawMousePos = () => {
     if (ctx == null) {
         return;
     }
-    drawGameOfLife();
     ctx.fillStyle = "rgba(255,0,0,0.5)";
     ctx.beginPath()
     const xpos = MousePosCanvas.x.value - (MousePosCanvas.x.value % gameBoardToCanvasFaktor.value.horizontal);
@@ -58,46 +61,44 @@ const toggleCell = (event: MouseEvent) => {
     row[arrayX] = oldValue === 1 ? 0 : 1;
     gameBoard.value[arrayY] = row
 
-    window.requestAnimationFrame(drawGameOfLife);
+    window.requestAnimationFrame(drawGameBoard);
 }
 
 const nextStepAndDraw = () => {
     calculateNextBoard();
-    window.requestAnimationFrame(drawGameOfLife);
+    window.requestAnimationFrame(drawGameBoard);
 }
 
 const resetAndDraw = () => {
-    reset();
-    window.requestAnimationFrame(drawGameOfLife);
+    reset(props.size);
+    window.requestAnimationFrame(drawGameBoard);
 }
 
-const gameOfLifeIsRunning = ref(false);
+watchEffect(() => {
+    props.size;
+    props.resetFlag;
+    resetAndDraw()
+})
+watch(() => props.nextStepFlag, (_, __) => {
+    nextStepAndDraw();
+})
 let gameOfLifeRunningIntervalId: ReturnType<typeof setInterval>;
-watch(gameOfLifeIsRunning, (newGameOfLifeIsRunning, oldvalue) => {
-    if (newGameOfLifeIsRunning) {
+watch(() => props.isGameOfLifeRunning, (newisGameOfLifeRunning, _) => {
+    if (newisGameOfLifeRunning) {
         gameOfLifeRunningIntervalId = setInterval(nextStepAndDraw, 500);
     } else {
         clearInterval(gameOfLifeRunningIntervalId)
     }
 })
 
-onMounted(() => window.requestAnimationFrame(drawGameOfLife))
+onMounted(() => window.requestAnimationFrame(drawGameBoard))
 </script>
 
 <template>
     <div class="flex flex-row justify-center">
-        <button @click="nextStepAndDraw" class="btn">next Step</button>
-        <button @click="resetAndDraw" class="btn">reset</button>
-        <button @click="gameOfLifeIsRunning = !gameOfLifeIsRunning" class="btn">
-            {{
-                gameOfLifeIsRunning ? "Stop" : "Play"
-            }}
-        </button>
-    </div>
-    <div class="flex flex-row justify-center">
         <canvas
             @click="toggleCell"
-            @pointermove="drawMousePos"
+            @pointermove="drawGameBoard"
             ref="canvas"
             width="800"
             height="800"

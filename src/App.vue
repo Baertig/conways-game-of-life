@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, WritableComputedRef } from "vue";
 
+
 const gameBoardSize = ref(20);
+const isGameOfLifeRunning = ref(false);
+const resetFlag = ref(false);
+const nextStepFlag = ref(false);
 const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   get() {
     return gameBoardSize.value.toString()
@@ -26,7 +30,24 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
     <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
     <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
   </div>
-  <router-view :size="gameBoardSize"></router-view>
+  <div class="flex flex row justify-center">
+    <button @click="nextStepFlag = !nextStepFlag" class="btn">next step</button>
+    <button @click="resetFlag = !resetFlag" class="btn">reset</button>
+    <button @click="isGameOfLifeRunning = !isGameOfLifeRunning" class="btn">
+      <svg height="20" width="20" viewBox="0 0 10 10">
+        <polygon v-if="isGameOfLifeRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
+        <polygon v-if="isGameOfLifeRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
+        <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
+      </svg>
+    </button>
+  </div>
+  <router-view
+    :size="gameBoardSize"
+    :isGameOfLifeRunning="isGameOfLifeRunning"
+    :nextStepFlag="nextStepFlag"
+    :resetFlag="resetFlag"
+    ref="gameOfLifeComponent"
+  ></router-view>
 </template>
 
 <style>
