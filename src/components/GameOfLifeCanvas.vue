@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, watch } from 'vue';
+import { computed, onMounted, Ref, ref, watch, watchEffect } from 'vue';
 import { useGameOfLife } from "../composables/gameOfLife"
+import { drawGameOfLifeOnCanvas, calculateGameBoardToCanvasFaktor } from '../composables/canvasDrawing';
+import { useMousePositionOnCanvas } from '../composables/MouseUtil';
 
 const props = defineProps<{
     size: number,
@@ -8,62 +10,47 @@ const props = defineProps<{
 
 const canvas: Ref<null | HTMLCanvasElement> = ref(null)
 
-const gameBoardToCanvasFaktor = 4;
-const ArraySize = 200
-const { gameBoard, calculateNextBoard, reset } = useGameOfLife(ArraySize);
+const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
+const MousePosCanvas = useMousePositionOnCanvas(canvas);
+const gameBoardToCanvasFaktor = computed(() => calculateGameBoardToCanvasFaktor(canvas.value, gameBoard.value))
 
 const drawGameOfLife = () => {
-    if (canvas.value === null) {
-        console.warn("canvas was null");
-        return
-    }
-    const ctx = canvas.value.getContext("2d");
-    if (ctx === null) {
-        console.warn("context was null >︿<")
-        return
-    }
-
-
-    const canvasWidth = canvas.value.width;
-    const canvasHeight = canvas.value.height;
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-
-    ctx.fillStyle = "black";
-    ctx.beginPath();
-    for (let y = 0; y < gameBoard.value.length; y++) {
-        for (let x = 0; x < gameBoard.value[y].length; x++)
-            if (gameBoard.value[y][x] === 1) {
-                const canvasX = x * gameBoardToCanvasFaktor;
-                const canvasY = y * gameBoardToCanvasFaktor;
-                ctx.fillRect(canvasX, canvasY, gameBoardToCanvasFaktor, gameBoardToCanvasFaktor);
-            }
-    }
-    ctx.stroke();
+    drawGameOfLifeOnCanvas(canvas.value, gameBoard.value);
 }
 
+watchEffect(() => {
+    reset(props.size)
+})
+
+const drawMousePos = () => {
+    if (MousePosCanvas.x.value < 0 || MousePosCanvas.y.value < 0) {
+        return
+    }
+    if (canvas.value == null) {
+        return;
+    }
+    const ctx = canvas.value.getContext("2d");
+    if (ctx == null) {
+        return;
+    }
+    drawGameOfLife();
+    ctx.fillStyle = "rgba(255,0,0,0.5)";
+    ctx.beginPath()
+    const xpos = MousePosCanvas.x.value - (MousePosCanvas.x.value % gameBoardToCanvasFaktor.value.horizontal);
+    const ypos = MousePosCanvas.y.value - (MousePosCanvas.y.value % gameBoardToCanvasFaktor.value.vertical);
+    ctx.fillRect(xpos, ypos, gameBoardToCanvasFaktor.value.horizontal, gameBoardToCanvasFaktor.value.vertical);
+    ctx.stroke()
+
+}
 
 const toggleCell = (event: MouseEvent) => {
-    const canvasPosition = {
-        x: canvas.value?.getBoundingClientRect().x,
-        y: canvas.value?.getBoundingClientRect().y
+    if (MousePosCanvas.x.value < 0 || MousePosCanvas.y.value < 0) {
+        return;
     }
 
-    if (canvasPosition.x === undefined || canvasPosition.y === undefined) {
-        console.warn("canvas Position was undefined");
-        return
-    }
-    const MouseClickOnCanvas = {
-        x: Math.round(event.clientX - canvasPosition.x),
-        y: Math.round(event.clientY - canvasPosition.y)
-    }
-    if (MouseClickOnCanvas.x > ArraySize * gameBoardToCanvasFaktor || MouseClickOnCanvas.y > ArraySize * gameBoardToCanvasFaktor) {
-        console.warn("MouseClick out of Canvas Coordinates");
-        return
-    }
-
-    const arrayX = Math.floor(MouseClickOnCanvas.x / gameBoardToCanvasFaktor);
-    const arrayY = Math.floor(MouseClickOnCanvas.y / gameBoardToCanvasFaktor);
-    console.log("Mouse Click on ", MouseClickOnCanvas.x, MouseClickOnCanvas.y);
+    const arrayX = Math.floor(MousePosCanvas.x.value / gameBoardToCanvasFaktor.value.horizontal);
+    const arrayY = Math.floor(MousePosCanvas.y.value / gameBoardToCanvasFaktor.value.vertical);
+    console.log("Mouse Click on ", MousePosCanvas.x.value, MousePosCanvas.y.value);
 
     const oldValue = gameBoard.value[arrayY][arrayX];
     console.log("old Value", oldValue);
@@ -110,6 +97,7 @@ onMounted(() => window.requestAnimationFrame(drawGameOfLife))
     <div class="flex flex-row justify-center">
         <canvas
             @click="toggleCell"
+            @pointermove="drawMousePos"
             ref="canvas"
             width="800"
             height="800"

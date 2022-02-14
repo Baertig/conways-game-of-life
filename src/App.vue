@@ -13,10 +13,14 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
 </script>
 
 <template>
-  <div class="flex flex-row justify-center bg-blue-300 p-2">
-    <h1 class="text-3xl mr-2">Conway Game of Life</h1>
-    <router-link class="mr-2 self-end" to="/">Normal Game</router-link>
-    <router-link class="self-end" to="/canvas">Canvas Game</router-link>
+  <div class="grid grid-cols-3 bg-blue-300 p-2">
+    <div>
+      <h1 class="text-3xl mr-2">Conway Game of Life</h1>
+    </div>
+    <div class="flex flex-row items-end justify-center">
+      <router-link class="mr-2 self-end" to="/">Normal Game</router-link>
+      <router-link class="self-end" to="/canvas">Canvas Game</router-link>
+    </div>
   </div>
   <div class="flex flex-row justify-center">
     <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>

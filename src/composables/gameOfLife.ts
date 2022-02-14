@@ -12,10 +12,7 @@ export function xAndYPositionFromTotalIndexAndSize(
   return { x: xPos, y: yPos };
 }
 
-export function numberOfLivingNeighbours(
-  board: number[][],
-  pos: { x: number; y: number }
-): number {
+export function numberOfLivingNeighbours(board: number[][], pos: { x: number; y: number }): number {
   const ymin = Math.max(pos.y - 1, 0);
   const ymax = Math.min(pos.y + 1, board.length - 1);
   const xmin = Math.max(pos.x - 1, 0);
@@ -30,10 +27,7 @@ export function numberOfLivingNeighbours(
   return livingNeighbours;
 }
 
-export function doesCellSurvive(
-  board: number[][],
-  pos: { x: number; y: number }
-): boolean {
+export function doesCellSurvive(board: number[][], pos: { x: number; y: number }): boolean {
   const neighbours = numberOfLivingNeighbours(board, pos);
   if (neighbours <= 1) {
     return false;
@@ -44,10 +38,7 @@ export function doesCellSurvive(
   }
 }
 
-export function willCellPopulate(
-  board: number[][],
-  pos: { x: number; y: number }
-): boolean {
+export function willCellPopulate(board: number[][], pos: { x: number; y: number }): boolean {
   const neighbours = numberOfLivingNeighbours(board, pos);
   if (neighbours === 3) {
     return true;

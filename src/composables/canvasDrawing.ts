@@ -9,38 +9,49 @@ interface Line {
   startPoint: Point;
   endPoint: Point;
 }
-
-export function drawGrid(
-  canvas: HTMLCanvasElement,
-  x_gap: number,
-  y_gap: number
-) {
-  const ctx = canvas.getContext("2d");
-  calculateLinePointsForGrid(canvas.width, canvas.height, x_gap, y_gap).forEach(
-    ({ startPoint, endPoint }) => {
-      ctx?.moveTo(startPoint.x, startPoint.y);
-      ctx?.lineTo(endPoint.x, endPoint.y);
-    }
-  );
-  ctx?.stroke();
+function isCanvasOrCtxNull(canvas: HTMLCanvasElement | null) {
+  return canvas === null || canvas.getContext("2d") === null;
 }
 
-export function calculateLinePointsForGrid(
-  width: number,
-  height: number,
-  x_gap: number,
-  y_gap: number
-): Line[] {
-  const lines = [] as Line[];
-  for (let x = 0; x < width; x += x_gap) {
-    const startPoint = { x, y: 0 };
-    const endPoint = { x, y: height };
-    lines.push({ startPoint, endPoint });
+export function calculateGameBoardToCanvasFaktor(canvas: HTMLCanvasElement | null, gameBoard: number[][]) {
+  if (isCanvasOrCtxNull(canvas)) {
+    console.warn("canvas or Context was null could not calclulate gameBoardToCanvasFaktor");
+    return {
+      horizontal: 1,
+      vertical: 1,
+    };
   }
-  for (let y = 0; y < height; y += y_gap) {
-    const startPoint = { x: 0, y };
-    const endPoint = { x: width, y };
-    lines.push({ startPoint, endPoint });
+  canvas = canvas as HTMLCanvasElement;
+  return {
+    horizontal: Math.floor(canvas.width / gameBoard[0].length),
+    vertical: Math.floor(canvas.height / gameBoard.length),
+  };
+}
+export function drawGameOfLifeOnCanvas(canvas: HTMLCanvasElement | null, gameBoard: number[][]) {
+  if (isCanvasOrCtxNull(canvas)) {
+    console.warn("canvas or Context was null");
+    return;
   }
-  return lines;
+  canvas = canvas as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+  const gameBoardToCanvasFaktor = calculateGameBoardToCanvasFaktor(canvas, gameBoard);
+  setup(ctx, canvas);
+
+  ctx.beginPath();
+
+  for (let y = 0; y < gameBoard.length; y++) {
+    for (let x = 0; x < gameBoard[y].length; x++)
+      if (gameBoard[y][x] === 1) {
+        const canvasX = x * gameBoardToCanvasFaktor.horizontal;
+        const canvasY = y * gameBoardToCanvasFaktor.vertical;
+        ctx.fillRect(canvasX, canvasY, gameBoardToCanvasFaktor.horizontal, gameBoardToCanvasFaktor.vertical);
+      }
+  }
+  ctx.stroke();
+}
+
+function setup(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "black";
 }
