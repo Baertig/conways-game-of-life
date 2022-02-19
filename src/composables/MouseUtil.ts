@@ -2,7 +2,7 @@ import { onMounted, onUnmounted, ref, Ref } from "@vue/runtime-dom";
 
 /**
  * @param canvas
- * @returns Mouse Position on a canvas (value is negative if the Mouse is not on the Canvas)
+ * @returns Mouse Position relative to a HTML Canvas Element (value is negative if the Mouse is not on the Canvas)
  */
 export function useMousePositionOnCanvas(canvas: Ref<HTMLCanvasElement | null>) {
   const mouseX = ref(-1);

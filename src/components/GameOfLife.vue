@@ -12,14 +12,11 @@ const props = defineProps<{
 const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
 
 watchEffect(() => {
-  console.log("reset Standard")
   props.resetFlag
   reset(props.size);
 })
 
 watch(() => props.nextStepFlag, (_, __) => {
-  console.log("next Step Standard")
-  props.nextStepFlag
   calculateNextBoard()
 })
 
@@ -45,19 +42,53 @@ watchEffect(() => {
   }
 
 })
+
+const grid_container = ref(null as HTMLElement | null);
+
+//function to caluculate gap : so that the gap is inverse proportional to the number of grid Elements
+//            1
+//  --------------------- * 100
+//  gameBoard.length + 15
+const gridGap = computed(() => Math.floor((1 / (gameBoard.value.length + 15)) * 100))
+
+const gridElementWidthAndHeight = computed(() => {
+  if (grid_container.value == null) {
+    console.log("grid_container is null")
+    return {
+      width: 0,
+      height: 0
+    }
+  }
+  const containerWidth = grid_container.value.offsetWidth
+  const containerHeight = grid_container.value.offsetHeight
+  const elementWidth = Math.floor(containerWidth / gameBoard.value[0].length) - gridGap.value
+  const elementHeight = Math.floor(containerHeight / gameBoard.value.length) - gridGap.value
+  const size = Math.min(elementHeight, elementWidth);
+
+  return {
+    width: size + "px",
+    height: size + "px"
+  }
+})
 </script>
 
 <template>
-  <div class="grid justify-center gap-1 auto-rows-fr" :style="cssGridRows">
+  <div
+    class="grid justify-center gap-4px auto-rows-fr w-full h-full"
+    :style="{ ...cssGridRows, columnGap: gridGap + 'px', rowGap: gridGap + 'px' }"
+    ref="grid_container"
+  >
     <div
       v-for="(value, index) in gameBoard.flat()"
       key="index"
-      class="w-10 h-10 rounded-sm"
       :class="value === 1 ? 'bg-red-700' : 'bg-blue-700'"
       @click="toggleElement($event, index)"
+      :style="gridElementWidthAndHeight"
     ></div>
   </div>
   <!-- so the windiCSS classes are already present -->
   <div class="bg-red-700"></div>
   <div class="bg-blue-700"></div>
+
+  <!-- class="w-10 h-10 rounded-sm" -->
 </template>

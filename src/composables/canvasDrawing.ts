@@ -1,5 +1,3 @@
-import { withCtx } from "vue";
-
 interface Point {
   x: number;
   y: number;
@@ -32,6 +30,7 @@ export function calculateGameBoardToCanvasFaktor(
 }
 export function clearCanvas(canvas: HTMLCanvasElement | null) {
   if (isCanvasOrCtxNull(canvas)) {
+    console.warn("canva or context null not able to clear Canvas");
     return;
   }
   canvas = canvas as HTMLCanvasElement;
@@ -40,7 +39,7 @@ export function clearCanvas(canvas: HTMLCanvasElement | null) {
 }
 export function drawGameOfLifeOnCanvas(canvas: HTMLCanvasElement | null, gameBoard: number[][]) {
   if (isCanvasOrCtxNull(canvas)) {
-    console.warn("canvas or Context was null");
+    console.warn("canvas or Context was null can't draw Game of Life");
     return;
   }
   canvas = canvas as HTMLCanvasElement;

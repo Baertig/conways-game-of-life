@@ -26,28 +26,30 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
       <router-link class="self-end" to="/canvas">Canvas Game</router-link>
     </div>
   </div>
-  <div class="flex flex-row justify-center">
-    <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
-    <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
+  <div class="grid grid-rows-[min-content,min-content,1fr] h-9/10">
+    <div class="flex flex-row justify-center">
+      <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
+      <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
+    </div>
+    <div class="flex flex row justify-center">
+      <button @click="nextStepFlag = !nextStepFlag" class="btn">next step</button>
+      <button @click="resetFlag = !resetFlag" class="btn">reset</button>
+      <button @click="isGameOfLifeRunning = !isGameOfLifeRunning" class="btn">
+        <svg height="20" width="20" viewBox="0 0 10 10">
+          <polygon v-if="isGameOfLifeRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
+          <polygon v-if="isGameOfLifeRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
+          <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
+        </svg>
+      </button>
+    </div>
+    <router-view
+      :size="gameBoardSize"
+      :isGameOfLifeRunning="isGameOfLifeRunning"
+      :nextStepFlag="nextStepFlag"
+      :resetFlag="resetFlag"
+      ref="gameOfLifeComponent"
+    ></router-view>
   </div>
-  <div class="flex flex row justify-center">
-    <button @click="nextStepFlag = !nextStepFlag" class="btn">next step</button>
-    <button @click="resetFlag = !resetFlag" class="btn">reset</button>
-    <button @click="isGameOfLifeRunning = !isGameOfLifeRunning" class="btn">
-      <svg height="20" width="20" viewBox="0 0 10 10">
-        <polygon v-if="isGameOfLifeRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
-        <polygon v-if="isGameOfLifeRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
-        <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
-      </svg>
-    </button>
-  </div>
-  <router-view
-    :size="gameBoardSize"
-    :isGameOfLifeRunning="isGameOfLifeRunning"
-    :nextStepFlag="nextStepFlag"
-    :resetFlag="resetFlag"
-    ref="gameOfLifeComponent"
-  ></router-view>
 </template>
 
 <style>
@@ -55,8 +57,13 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
 .router-link-active {
   text-decoration: underline;
+}
+html,
+body {
+  height: 100%;
 }
 </style>
