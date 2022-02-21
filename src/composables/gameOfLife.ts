@@ -76,3 +76,23 @@ export function useGameOfLife(size: number) {
 
   return { gameBoard, calculateNextBoard, reset };
 }
+
+export function calculateNextBoard(gameBoard: number[][]) {
+  const ymax = gameBoard.length;
+  const xmax = gameBoard[0].length;
+  const newBoard = [];
+  for (let y = 0; y < ymax; y++) {
+    const row = [...gameBoard[y]];
+    for (let x = 0; x < xmax; x++) {
+      if (row[x] === 0) {
+        row[x] = willCellPopulate(gameBoard, { x, y }) ? 1 : 0;
+      } else if (row[x] === 1) {
+        row[x] = doesCellSurvive(gameBoard, { x, y }) ? 1 : 0;
+      } else {
+        console.error(`Unexpected Value in GameBoard: ${row[x]}`);
+      }
+    }
+    newBoard.push(row);
+  }
+  return newBoard;
+}
