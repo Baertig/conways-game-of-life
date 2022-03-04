@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, WritableComputedRef } from "vue";
+import { useGameOfLife } from "./store/gameOfLifeStore";
 
-
-const gameBoardSize = ref(20);
-const isGameOfLifeRunning = ref(false);
-const resetFlag = ref(false);
-const nextStepFlag = ref(false);
+const gameOfLifeStore = useGameOfLife();
 const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   get() {
-    return gameBoardSize.value.toString()
+    return gameOfLifeStore.gameBoard.length.toString();
   },
   set(sizeInput: string) {
-    return gameBoardSize.value = parseInt(sizeInput)
+    return gameOfLifeStore.resizeGameBoard(parseInt(sizeInput));
   }
 })
 </script>
@@ -28,27 +25,31 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   </div>
   <div class="grid grid-rows-[min-content,min-content,1fr] h-9/10">
     <div class="flex flex-row justify-center">
-      <span class="mr-2">Board Size: {{ gameBoardSize }}x{{ gameBoardSize }}</span>
+      <span
+        class="mr-2"
+      >Board Size: {{ gameOfLifeStore.gameBoardSize }}x{{ gameOfLifeStore.gameBoardSize }}</span>
       <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
     </div>
     <div class="flex flex row justify-center">
-      <button @click="nextStepFlag = !nextStepFlag" class="btn">next step</button>
-      <button @click="resetFlag = !resetFlag" class="btn">reset</button>
-      <button @click="isGameOfLifeRunning = !isGameOfLifeRunning" class="btn">
+      <button @click="gameOfLifeStore.calculateNextBoard" class="btn">next step</button>
+      <button @click="gameOfLifeStore.resetGameBoard" class="btn">reset</button>
+      <button @click="gameOfLifeStore.toggleGameOfLifeRunning" class="btn">
         <svg height="20" width="20" viewBox="0 0 10 10">
-          <polygon v-if="isGameOfLifeRunning" points="0,0 0,10 4,10 4,0" style="fill:gray" />
-          <polygon v-if="isGameOfLifeRunning" points="6,0 6,10 10,10 10,0" style="fill:gray" />
+          <polygon
+            v-if="gameOfLifeStore.isGameOfLifeRunning"
+            points="0,0 0,10 4,10 4,0"
+            style="fill:gray"
+          />
+          <polygon
+            v-if="gameOfLifeStore.isGameOfLifeRunning"
+            points="6,0 6,10 10,10 10,0"
+            style="fill:gray"
+          />
           <polygon v-else points="0,0 0,10 10,5" style="fill:gray" />
         </svg>
       </button>
     </div>
-    <router-view
-      :size="gameBoardSize"
-      :isGameOfLifeRunning="isGameOfLifeRunning"
-      :nextStepFlag="nextStepFlag"
-      :resetFlag="resetFlag"
-      ref="gameOfLifeComponent"
-    ></router-view>
+    <router-view />
   </div>
 </template>
 

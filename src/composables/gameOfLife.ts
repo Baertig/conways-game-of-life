@@ -1,6 +1,6 @@
 import { ref, Ref } from "vue";
 
-export function createGameBoardArrayFromSize(size: number): number[][] {
+export function createEmptyGameBoardArrayFromSize(size: number): number[][] {
   return new Array(size).fill(new Array(size).fill(0));
 }
 export function xAndYPositionFromTotalIndexAndSize(
@@ -47,11 +47,11 @@ export function willCellPopulate(board: number[][], pos: { x: number; y: number 
 }
 
 export function useGameOfLife(size: number) {
-  const gameBoard = ref(createGameBoardArrayFromSize(size));
+  const gameBoard = ref(createEmptyGameBoardArrayFromSize(size));
   const boardSize = size;
 
   function reset(size = boardSize) {
-    gameBoard.value = createGameBoardArrayFromSize(size);
+    gameBoard.value = createEmptyGameBoardArrayFromSize(size);
   }
 
   function calculateNextBoard() {

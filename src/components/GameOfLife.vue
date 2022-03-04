@@ -1,47 +1,20 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, watchEffect } from "vue";
-import { xAndYPositionFromTotalIndexAndSize, useGameOfLife } from "../composables/gameOfLife"
+import { xAndYPositionFromTotalIndexAndSize } from "../composables/gameOfLife"
+import { useGameOfLife } from "../store/gameOfLifeStore"
 
-const props = defineProps<{
-  size: number,
-  isGameOfLifeRunning: boolean,
-  resetFlag: boolean,
-  nextStepFlag: boolean
-}>()
+const gameOfLifeStore = useGameOfLife();
 
-const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
-
-watchEffect(() => {
-  props.resetFlag
-  reset(props.size);
-})
-
-watch(() => props.nextStepFlag, (_, __) => {
-  calculateNextBoard()
-})
 
 const cssGridRows = computed(() => ({
-  "grid-template-columns": "repeat(" + gameBoard.value.length + ",min-content)"
+  "grid-template-columns": "repeat(" + gameOfLifeStore.gameBoard.length + ",min-content)"
 }));
 
 const toggleElement = (_: MouseEvent, index: number) => {
-  const { x, y } = xAndYPositionFromTotalIndexAndSize(index, props.size);
-  const oldValue = gameBoard.value[y][x]
-  //can't set element in nested array like gameBoard.value[y][x] = 1:
-  const row = [...gameBoard.value[y]]
-  row[x] = oldValue === 1 ? 0 : 1
-  gameBoard.value[y] = row;
+  const { x, y } = xAndYPositionFromTotalIndexAndSize(index, gameOfLifeStore.gameBoard.length);
+  gameOfLifeStore.toggleElement({ x, y })
 }
 
-let gameOfLifeRunningIntervalId: ReturnType<typeof setInterval>;
-watchEffect(() => {
-  if (props.isGameOfLifeRunning) {
-    gameOfLifeRunningIntervalId = setInterval(calculateNextBoard, 500);
-  } else {
-    clearInterval(gameOfLifeRunningIntervalId)
-  }
-
-})
 
 const grid_container = ref(null as HTMLElement | null);
 
@@ -49,7 +22,7 @@ const grid_container = ref(null as HTMLElement | null);
 //            1
 //  --------------------- * 100
 //  gameBoard.length + 15
-const gridGap = computed(() => Math.floor((1 / (gameBoard.value.length + 15)) * 100))
+const gridGap = computed(() => Math.floor((1 / (gameOfLifeStore.gameBoard.length + 15)) * 100))
 
 const gridElementWidthAndHeight = computed(() => {
   if (grid_container.value == null) {
@@ -61,8 +34,8 @@ const gridElementWidthAndHeight = computed(() => {
   }
   const containerWidth = grid_container.value.offsetWidth
   const containerHeight = grid_container.value.offsetHeight
-  const elementWidth = Math.floor(containerWidth / gameBoard.value[0].length) - gridGap.value
-  const elementHeight = Math.floor(containerHeight / gameBoard.value.length) - gridGap.value
+  const elementWidth = Math.floor(containerWidth / gameOfLifeStore.gameBoard[0].length) - gridGap.value
+  const elementHeight = Math.floor(containerHeight / gameOfLifeStore.gameBoard.length) - gridGap.value
   const size = Math.min(elementHeight, elementWidth);
 
   return {
@@ -79,7 +52,7 @@ const gridElementWidthAndHeight = computed(() => {
     ref="grid_container"
   >
     <div
-      v-for="(value, index) in gameBoard.flat()"
+      v-for="(value, index) in gameOfLifeStore.gameBoard.flat()"
       key="index"
       :class="value === 1 ? 'bg-red-700' : 'bg-blue-700'"
       @click="toggleElement($event, index)"
