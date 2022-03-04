@@ -1,27 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, Ref, ref, watch, watchEffect } from 'vue';
-import { useGameOfLife } from "../composables/gameOfLife"
+import { useGameOfLife } from "../store/gameOfLifeStore"
 import { drawGameOfLifeOnCanvas, calculateGameBoardToCanvasFaktor, clearCanvas } from '../composables/canvasDrawing';
 import { useMousePositionOnCanvas } from '../composables/MouseUtil';
 
-const props = defineProps<{
-    size: number,
-    isGameOfLifeRunning: boolean
-    resetFlag: boolean,
-    nextStepFlag: boolean
-}>()
 
 
 const canvas: Ref<null | HTMLCanvasElement> = ref(null)
 
-const { gameBoard, calculateNextBoard, reset } = useGameOfLife(props.size);
+const gameOfLifeStore = useGameOfLife();
 const MousePosCanvas = useMousePositionOnCanvas(canvas);
-const gameBoardToCanvasFaktor = computed(() => calculateGameBoardToCanvasFaktor(canvas.value, gameBoard.value))
+const gameBoardToCanvasFaktor = computed(() => calculateGameBoardToCanvasFaktor(canvas.value, gameOfLifeStore.gameBoard))
 
 const drawGameBoard = () => {
     clearCanvas(canvas.value);
     drawMousePos();
-    drawGameOfLifeOnCanvas(canvas.value, gameBoard.value);
+    drawGameOfLifeOnCanvas(canvas.value, gameOfLifeStore.gameBoard);
 }
 
 
@@ -55,42 +49,15 @@ const toggleCell = (event: MouseEvent) => {
     const arrayY = Math.floor(MousePosCanvas.y.value / gameBoardToCanvasFaktor.value.vertical);
     console.log("Mouse Click on ", MousePosCanvas.x.value, MousePosCanvas.y.value);
 
-    const oldValue = gameBoard.value[arrayY][arrayX];
-    console.log("old Value", oldValue);
-    const row = [...gameBoard.value[arrayY]]
-    row[arrayX] = oldValue === 1 ? 0 : 1;
-    gameBoard.value[arrayY] = row
-
+    gameOfLifeStore.toggleElement({ x: arrayX, y: arrayY })
     window.requestAnimationFrame(drawGameBoard);
 }
 
-const nextStepAndDraw = () => {
-    calculateNextBoard();
-    window.requestAnimationFrame(drawGameBoard);
-}
-
-const resetAndDraw = () => {
-    reset(props.size);
-    window.requestAnimationFrame(drawGameBoard);
-}
-
-watchEffect(() => {
-    props.size;
-    props.resetFlag;
-    resetAndDraw()
-})
-watch(() => props.nextStepFlag, (_, __) => {
-    nextStepAndDraw();
-})
-let gameOfLifeRunningIntervalId: ReturnType<typeof setInterval>;
-watch(() => props.isGameOfLifeRunning, (newisGameOfLifeRunning, _) => {
-    if (newisGameOfLifeRunning) {
-        gameOfLifeRunningIntervalId = setInterval(nextStepAndDraw, 500);
-    } else {
-        clearInterval(gameOfLifeRunningIntervalId)
+gameOfLifeStore.$onAction(({ name, after }) => {
+    if (name == 'calculateNextBoard' || name == 'resetGameBoard' || name == 'resizeGameBoard' || name == 'toggleElement') {
+        after(() => window.requestAnimationFrame(drawGameBoard))
     }
 })
-
 onMounted(() => window.requestAnimationFrame(drawGameBoard))
 </script>
 
