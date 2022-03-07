@@ -54,9 +54,10 @@ const gridElementWidthAndHeight = computed(() => {
     <div
       v-for="(value, index) in gameOfLifeStore.gameBoard.flat()"
       key="index"
-      :class="value === 1 ? 'bg-red-700' : 'bg-blue-700'"
+      :class="value === 1 ? 'bg-red-700 hover:bg-blue-700' : 'bg-blue-700 hover:bg-red-700'"
       @click="toggleElement($event, index)"
       :style="gridElementWidthAndHeight"
+      class="hover:scale-90 hover:transform transition"
     ></div>
   </div>
   <!-- so the windiCSS classes are already present -->
