@@ -1,8 +1,13 @@
 import { isModelListener } from "@vue/shared";
+import { chain, range } from "lodash";
 import { defineStore } from "pinia";
 import {
+  addColToGameBoard,
+  addRowToGameBoard,
   calculateNextBoard as calculateNextBoardState,
   createEmptyGameBoardArrayFromSize,
+  growGameboard,
+  shrinkGameBoard,
 } from "../composables/gameOfLife";
 const INIT_GAME_BOARD_SIZE = 20;
 
@@ -21,7 +26,14 @@ export const useGameOfLife = defineStore("Game of Life", {
     },
     //TODO change so that the current Borad State is not mutated
     resizeGameBoard(size: number) {
-      this.gameBoard = createEmptyGameBoardArrayFromSize(size);
+      const sizeDifference = this.gameBoard.length - size;
+      const boardIsTooSmall = sizeDifference < 0;
+      const boardIsTooBig = sizeDifference > 0;
+      if (boardIsTooSmall) {
+        this.gameBoard = growGameboard(this.gameBoard, size);
+      } else if (boardIsTooBig) {
+        this.gameBoard = shrinkGameBoard(this.gameBoard, size);
+      }
     },
 
     resetGameBoard() {

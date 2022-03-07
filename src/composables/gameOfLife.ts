@@ -1,4 +1,5 @@
 import { ref, Ref } from "vue";
+import { concat, drop, dropRight, map } from "lodash";
 
 export function createEmptyGameBoardArrayFromSize(size: number): number[][] {
   return new Array(size).fill(new Array(size).fill(0));
@@ -95,4 +96,57 @@ export function calculateNextBoard(gameBoard: number[][]) {
     newBoard.push(row);
   }
   return newBoard;
+}
+export function growGameboard(gameBoard: number[][], requiredSize: number): number[][] {
+  if (gameBoard.length >= requiredSize) {
+    return gameBoard;
+  }
+  return growGameboard(addOneRowAndColToBoard(gameBoard), requiredSize);
+}
+
+function addOneRowAndColToBoard(gameBoard: number[][]) {
+  return addRowToGameBoard(addColToGameBoard(gameBoard));
+}
+
+export function addRowToGameBoard(gameBoard: number[][]) {
+  const newRow = Array(gameBoard[0].length).fill(0);
+  if (gameBoard.length % 2 == 0) {
+    return concat(gameBoard, [newRow]) as number[][];
+  } else {
+    return concat([newRow], gameBoard) as number[][];
+  }
+}
+
+export function addColToGameBoard(gameBoard: number[][]) {
+  if (gameBoard[0].length % 2 == 0) {
+    return map(gameBoard, (row) => concat(row, 0));
+  } else {
+    return map(gameBoard, (row) => concat(0, row));
+  }
+}
+
+export function shrinkGameBoard(gameBoard: number[][], size: number): number[][] {
+  if (gameBoard.length <= size) {
+    return gameBoard;
+  }
+  return shrinkGameBoard(removeOneRowAndColFromGameBoard(gameBoard), size);
+}
+
+function removeOneRowAndColFromGameBoard(gameBoard: number[][]) {
+  return removeRowFromGameBoard(removeColFromGameBoard(gameBoard));
+}
+export function removeRowFromGameBoard(gameBoard: number[][]) {
+  if (gameBoard.length % 2 === 0) {
+    return drop(gameBoard);
+  } else {
+    return dropRight(gameBoard);
+  }
+}
+
+export function removeColFromGameBoard(gameBoard: number[][]) {
+  if (gameBoard[0].length % 2 === 0) {
+    return map(gameBoard, (row) => drop(row));
+  } else {
+    return map(gameBoard, (row) => dropRight(row));
+  }
 }

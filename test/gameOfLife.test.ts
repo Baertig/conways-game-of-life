@@ -7,7 +7,7 @@ test("initialze Array with size 4", () => {
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ];
-  expect(gameOfLife.createGameBoardArrayFromSize(4)).toEqual(gameBoardSize4);
+  expect(gameOfLife.createEmptyGameBoardArrayFromSize(4)).toEqual(gameBoardSize4);
 });
 
 // Size 5x5
@@ -172,4 +172,121 @@ test("useGameBoard simple Row of Three", () => {
   gameBoard.value = startBoard;
   calculateNextBoard();
   expect(gameBoard.value).toEqual(endBoard);
+});
+
+test("add Row To GameBoard", () => {
+  const gameBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+  const gameBoardStep1 = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0], //-> Add empty Row to bottom
+  ];
+
+  const newGameBoard1 = gameOfLife.addRowToGameBoard(gameBoard);
+  expect(newGameBoard1).toEqual(gameBoardStep1);
+
+  const gameBoardStep2 = [
+    [0, 0, 0, 0], // -> Add empty Row to top
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  const newGameBoard2 = gameOfLife.addRowToGameBoard(gameBoardStep1);
+  expect(newGameBoard2).toEqual(gameBoardStep2);
+});
+
+test("Add Col to Gameboard", () => {
+  const gameBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+
+  const gameBoardStep1 = [
+    [0, 0, 1, 0, 0], //-> Add empty Col to end
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0],
+  ];
+  const newGameBoard1 = gameOfLife.addColToGameBoard(gameBoard);
+  expect(newGameBoard1).toEqual(gameBoardStep1);
+
+  const gameBoardStep2 = [
+    [0, 0, 0, 1, 0, 0], //-> Add empty Col to start
+    [0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0],
+  ];
+
+  const newGameBoard2 = gameOfLife.addColToGameBoard(gameBoardStep1);
+  expect(newGameBoard2).toEqual(gameBoardStep2);
+});
+
+//Removing Rows should be the opposite Operation to adding Rows:
+//When there are a uneven number of rows a row is added to the top.
+//-> it follows when a row is removed from a Gameboard with a even number of Rows
+//  the top Row needs to be removed.
+test("Remove Row from Canvas", () => {
+  const initGameBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+  const gameBoardStep1 = [
+    // [0, 0, 1, 0], //remove top Row
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+
+  const newGameBoard1 = gameOfLife.removeRowFromGameBoard(initGameBoard);
+  expect(newGameBoard1).toEqual(gameBoardStep1);
+
+  const gameBoardStep2 = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    // [0, 0, 1, 0],-> remove bottom Row
+  ];
+
+  const newGameBoard2 = gameOfLife.removeRowFromGameBoard(gameBoardStep1);
+  expect(newGameBoard2).toEqual(gameBoardStep2);
+});
+
+test("Remove Col from Canvas", () => {
+  const initGameBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 1],
+    [1, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+  const gameBoardStep1 = [
+    [0, 1, 0], //-> remove first Col
+    [0, 1, 1],
+    [0, 1, 0],
+    [0, 0, 0],
+  ];
+
+  const newGameBoard1 = gameOfLife.removeColFromGameBoard(initGameBoard);
+  expect(newGameBoard1).toEqual(gameBoardStep1);
+
+  const gameBoardStep2 = [
+    [0, 1], //-> remove last Col
+    [0, 1],
+    [0, 1],
+    [0, 0],
+  ];
+
+  const newGameBoard2 = gameOfLife.removeColFromGameBoard(gameBoardStep1);
+  expect(newGameBoard2).toEqual(gameBoardStep2);
 });
