@@ -24,13 +24,37 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
     </div>
   </div>
   <div class="grid grid-rows-[min-content,min-content,1fr] h-9/10">
-    <div class="flex flex-row justify-center">
+    <div class="flex flex-row justify-center items-baseline">
       <span
         class="mr-2"
       >Board Size: {{ gameOfLifeStore.gameBoardSize }}x{{ gameOfLifeStore.gameBoardSize }}</span>
-      <input type="range" min="5" max="100" v-model="gameBoardSizeInputHandle" />
+      <div>
+        <button
+          class="m-1 w-5 h-5 text-lg rounded-full bg-red-400 shadow-md active:shadow-none align-middle"
+          @click="gameOfLifeStore.resizeGameBoard(gameOfLifeStore.gameBoardSize - 1)"
+        >
+          <div class="relative bottom-1.4">-</div>
+        </button>
+      </div>
+      <div>
+        <input
+          class="align-middle"
+          type="range"
+          min="5"
+          max="100"
+          v-model="gameBoardSizeInputHandle"
+        />
+      </div>
+      <div>
+        <button
+          class="m-1 w-5 h-5 text-lg rounded-full bg-green-400 shadow-md active:shadow-none align-middle"
+          @click="gameOfLifeStore.resizeGameBoard(gameOfLifeStore.gameBoardSize + 1)"
+        >
+          <div class="relative bottom-0.9 right-0.1">+</div>
+        </button>
+      </div>
     </div>
-    <div class="flex flex row justify-center">
+    <div class="flex flex-row justify-center">
       <button @click="gameOfLifeStore.calculateNextBoard" class="btn">next step</button>
       <button @click="gameOfLifeStore.resetGameBoard" class="btn">reset</button>
       <button @click="gameOfLifeStore.toggleGameOfLifeRunning" class="btn">
