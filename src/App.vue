@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, WritableComputedRef } from "vue";
 import { useGameOfLife } from "./store/gameOfLifeStore";
+import ActiveCellsChart from "./components/ActiveCellsChart.vue";
 
+const showChart = ref(false);
 const gameOfLifeStore = useGameOfLife();
 const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
   get() {
@@ -14,6 +16,9 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
 </script>
 
 <template>
+  <div v-if="showChart" class="fixed top-14 right-8">
+    <ActiveCellsChart />
+  </div>
   <div class="grid grid-cols-3 bg-blue-300 p-2">
     <div>
       <h1 class="text-3xl mr-2">Conway Game of Life</h1>
@@ -21,6 +26,14 @@ const gameBoardSizeInputHandle: WritableComputedRef<string> = computed({
     <div class="flex flex-row items-end justify-center">
       <router-link class="mr-2 self-end" to="/">Normal Game</router-link>
       <router-link class="self-end" to="/canvas">Canvas Game</router-link>
+    </div>
+    <div class="flex flex-row items-baseline justify-end">
+      <span>active Cells {{ gameOfLifeStore.activeCells }}</span>
+      <button
+        class="p-1 m-1 bg-gray-300 rounded-md shadow-black"
+        :class="showChart ? 'shadow-inner' : 'shadow'"
+        @click="showChart = !showChart"
+      >Chart</button>
     </div>
   </div>
   <div class="grid grid-rows-[min-content,min-content,1fr] h-9/10">
