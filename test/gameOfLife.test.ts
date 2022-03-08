@@ -290,3 +290,15 @@ test("Remove Col from Canvas", () => {
   const newGameBoard2 = gameOfLife.removeColFromGameBoard(gameBoardStep1);
   expect(newGameBoard2).toEqual(gameBoardStep2);
 });
+
+test("count ative cells", () => {
+  const gameBoard = [
+    [0, 0, 1, 0],
+    [0, 0, 1, 1],
+    [1, 0, 1, 0],
+    [0, 0, 0, 0],
+  ];
+  const activeCells = 5;
+
+  expect(gameOfLife.countActiveCells(gameBoard)).toEqual(activeCells);
+});

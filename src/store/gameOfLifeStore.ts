@@ -1,10 +1,9 @@
 import { isModelListener } from "@vue/shared";
-import { chain, range } from "lodash";
+import { chain, concat, range } from "lodash";
 import { defineStore } from "pinia";
 import {
-  addColToGameBoard,
-  addRowToGameBoard,
   calculateNextBoard as calculateNextBoardState,
+  countActiveCells,
   createEmptyGameBoardArrayFromSize,
   growGameboard,
   shrinkGameBoard,
@@ -16,13 +15,16 @@ export const useGameOfLife = defineStore("Game of Life", {
     gameBoard: createEmptyGameBoardArrayFromSize(INIT_GAME_BOARD_SIZE),
     isGameOfLifeRunning: false,
     gameOfLifeRunningIntervalId: null as null | ReturnType<typeof setInterval>,
+    cellCountHistory: [] as number[],
   }),
   getters: {
     gameBoardSize: (state) => state.gameBoard.length,
+    activeCells: (state) => countActiveCells(state.gameBoard),
   },
   actions: {
     calculateNextBoard() {
       this.gameBoard = calculateNextBoardState(this.gameBoard);
+      this.cellCountHistory = concat(this.cellCountHistory, countActiveCells(this.gameBoard));
     },
     //TODO change so that the current Borad State is not mutated
     resizeGameBoard(size: number) {
@@ -38,6 +40,7 @@ export const useGameOfLife = defineStore("Game of Life", {
 
     resetGameBoard() {
       this.gameBoard = createEmptyGameBoardArrayFromSize(this.gameBoardSize);
+      this.cellCountHistory = [];
     },
 
     toggleElement({ x, y }: { x: number; y: number }) {

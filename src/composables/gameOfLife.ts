@@ -150,3 +150,7 @@ export function removeColFromGameBoard(gameBoard: number[][]) {
     return map(gameBoard, (row) => dropRight(row));
   }
 }
+
+export function countActiveCells(gameBoard: number[][]) {
+  return gameBoard.flat().reduce((sum, cell) => sum + cell);
+}
