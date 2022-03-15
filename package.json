@@ -6,6 +6,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "jest",
+    "test-coverage": "jest --coverage",
     "init": "jest --init"
   },
   "dependencies": {
