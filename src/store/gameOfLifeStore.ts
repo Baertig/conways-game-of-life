@@ -54,7 +54,7 @@ export const useGameOfLife = defineStore("Game of Life", {
       this.isGameOfLifeRunning = !this.isGameOfLifeRunning;
 
       if (this.isGameOfLifeRunning) {
-        this.gameOfLifeRunningIntervalId = setInterval(this.calculateNextBoard, 500);
+        this.gameOfLifeRunningIntervalId = setInterval(this.calculateNextBoard, 200);
       } else if (this.gameOfLifeRunningIntervalId != null) {
         clearInterval(this.gameOfLifeRunningIntervalId);
       }
