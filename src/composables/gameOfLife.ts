@@ -4,6 +4,12 @@ import { concat, drop, dropRight, map } from "lodash";
 export function createEmptyGameBoardArrayFromSize(size: number): number[][] {
   return new Array(size).fill(new Array(size).fill(0));
 }
+
+export const CellState = Object.freeze({
+  DEAD: 0,
+  ALIVE: 1,
+});
+
 export function xAndYPositionFromTotalIndexAndSize(
   index: number,
   size: number
@@ -13,7 +19,10 @@ export function xAndYPositionFromTotalIndexAndSize(
   return { x: xPos, y: yPos };
 }
 
-export function numberOfLivingNeighbours(board: number[][], pos: { x: number; y: number }): number {
+export function calculateNumberOfLivingNeighbours(
+  board: number[][],
+  pos: { x: number; y: number }
+): number {
   const ymin = Math.max(pos.y - 1, 0);
   const ymax = Math.min(pos.y + 1, board.length - 1);
   const xmin = Math.max(pos.x - 1, 0);
@@ -28,54 +37,29 @@ export function numberOfLivingNeighbours(board: number[][], pos: { x: number; y:
   return livingNeighbours;
 }
 
-export function doesCellSurvive(board: number[][], pos: { x: number; y: number }): boolean {
-  const neighbours = numberOfLivingNeighbours(board, pos);
-  if (neighbours <= 1) {
+export function doesCellSurvive({
+  numberOfLivingNeighbours,
+}: {
+  numberOfLivingNeighbours: number;
+}): boolean {
+  if (numberOfLivingNeighbours <= 1) {
     return false;
-  } else if (neighbours <= 3) {
+  } else if (numberOfLivingNeighbours <= 3) {
     return true;
   } else {
     return false;
   }
 }
 
-export function willCellPopulate(board: number[][], pos: { x: number; y: number }): boolean {
-  const neighbours = numberOfLivingNeighbours(board, pos);
-  if (neighbours === 3) {
+export function willCellPopulate({
+  numberOfLivingNeighbours,
+}: {
+  numberOfLivingNeighbours: number;
+}): boolean {
+  if (numberOfLivingNeighbours === 3) {
     return true;
   }
   return false;
-}
-
-export function useGameOfLife(size: number) {
-  const gameBoard = ref(createEmptyGameBoardArrayFromSize(size));
-  const boardSize = size;
-
-  function reset(size = boardSize) {
-    gameBoard.value = createEmptyGameBoardArrayFromSize(size);
-  }
-
-  function calculateNextBoard() {
-    const ymax = gameBoard.value.length;
-    const xmax = gameBoard.value[0].length;
-    const newBoard = [];
-    for (let y = 0; y < ymax; y++) {
-      const row = [...gameBoard.value[y]];
-      for (let x = 0; x < xmax; x++) {
-        if (row[x] === 0) {
-          row[x] = willCellPopulate(gameBoard.value, { x, y }) ? 1 : 0;
-        } else if (row[x] === 1) {
-          row[x] = doesCellSurvive(gameBoard.value, { x, y }) ? 1 : 0;
-        } else {
-          console.error(`Unexpected Value in GameBoard: ${row[x]}`);
-        }
-      }
-      newBoard.push(row);
-    }
-    gameBoard.value = newBoard;
-  }
-
-  return { gameBoard, calculateNextBoard, reset };
 }
 
 export function calculateNextBoard(gameBoard: number[][]) {
@@ -85,17 +69,26 @@ export function calculateNextBoard(gameBoard: number[][]) {
   for (let y = 0; y < ymax; y++) {
     const row = [...gameBoard[y]];
     for (let x = 0; x < xmax; x++) {
-      if (row[x] === 0) {
-        row[x] = willCellPopulate(gameBoard, { x, y }) ? 1 : 0;
-      } else if (row[x] === 1) {
-        row[x] = doesCellSurvive(gameBoard, { x, y }) ? 1 : 0;
-      } else {
-        console.error(`Unexpected Value in GameBoard: ${row[x]}`);
-      }
+      const numberLivingOfNeigbours = calculateNumberOfLivingNeighbours(gameBoard, { x, y });
+      row[x] = calclulateNextCellState(row[x], numberLivingOfNeigbours);
     }
     newBoard.push(row);
   }
   return newBoard;
+}
+
+export function calclulateNextCellState(
+  currentState: number,
+  numberOfLivingNeighbours: number
+): number {
+  if (currentState === CellState.DEAD) {
+    return willCellPopulate({ numberOfLivingNeighbours }) ? CellState.ALIVE : CellState.DEAD;
+  } else if (currentState === CellState.ALIVE) {
+    return doesCellSurvive({ numberOfLivingNeighbours }) ? CellState.ALIVE : CellState.DEAD;
+  } else {
+    console.error(`Unexpected Value in GameBoard: ${currentState}`);
+    return CellState.DEAD;
+  }
 }
 export function growGameboard(gameBoard: number[][], requiredSize: number): number[][] {
   if (gameBoard.length >= requiredSize) {

@@ -1,5 +1,101 @@
 const gameOfLife = require("../src/composables/gameOfLife");
 
+test("cell with 2 neigbours", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 1, 1, 0],
+    [0, 1, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  const position = { x: 1, y: 1 };
+  expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(2);
+});
+
+test("cell with 3 neighbours and 2 non related", () => {
+  const board = [
+    [1, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 1, 1, 0],
+    [0, 1, 1, 0],
+  ];
+  const position = { x: 2, y: 3 };
+  expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(3);
+});
+
+test("row of 3 number of Living neighbours middle", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 2, y: 2 };
+  expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(2);
+});
+
+test("row of 3 number of Living neighbours side", () => {
+  const board = [
+    [0, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0],
+  ];
+  const position = { x: 1, y: 2 };
+  expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(3);
+});
+
+test("does a living cell survive ?", () => {
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 0 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 1 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 2 })).toBe(true);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 3 })).toBe(true);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 4 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 5 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 6 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 7 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 8 })).toBe(false);
+  expect(gameOfLife.doesCellSurvive({ numberOfLivingNeighbours: 9 })).toBe(false);
+});
+
+test("will dead cell be populated ? ", () => {
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 0 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 1 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 2 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 3 })).toBe(true);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 4 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 5 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 6 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 7 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 8 })).toBe(false);
+  expect(gameOfLife.willCellPopulate({ numberOfLivingNeighbours: 9 })).toBe(false);
+});
+
+test("change cell state", () => {
+  expect(gameOfLife.calclulateNextCellState(gameOfLife.CellState.DEAD, 3)).toBe(
+    gameOfLife.CellState.ALIVE
+  );
+  expect(gameOfLife.calclulateNextCellState(gameOfLife.CellState.ALIVE, 1)).toBe(
+    gameOfLife.CellState.DEAD
+  );
+});
+
+test("calculate next game Board", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
+  const gameBoadBefore = [
+    [o, o, X, o],
+    [o, o, X, o],
+    [o, o, X, o],
+    [o, o, o, o],
+  ];
+  const gameBoardAfter = [
+    [o, o, o, o],
+    [o, X, X, X],
+    [o, o, o, o],
+    [o, o, o, o],
+  ];
+  expect(gameOfLife.calculateNextBoard(gameBoadBefore)).toEqual(gameBoardAfter);
+});
 test("initialze Array with size 4", () => {
   const gameBoardSize4 = [
     [0, 0, 0, 0],
@@ -32,146 +128,6 @@ test("index: 4, size: 5x5 => x=4 and y=0", () => {
 test("index: 7, size: 5x5 => x=2 and y=1", () => {
   const position = { x: 2, y: 1 };
   expect(gameOfLife.xAndYPositionFromTotalIndexAndSize(7, 5)).toEqual(position);
-});
-
-test("cell with 2 neigbours", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 1, 1, 0],
-    [0, 1, 0, 0],
-    [0, 0, 0, 0],
-  ];
-  const position = { x: 1, y: 1 };
-  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(2);
-});
-
-test("cell with 3 neighbours and 2 non related", () => {
-  const board = [
-    [1, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 1, 1, 0],
-    [0, 1, 1, 0],
-  ];
-  const position = { x: 2, y: 3 };
-  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(3);
-});
-
-test("row of 3 number of Living neighbours middle", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-  ];
-  const position = { x: 2, y: 2 };
-  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(2);
-});
-
-test("row of 3 number of Living neighbours side", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-  ];
-  const position = { x: 1, y: 2 };
-  expect(gameOfLife.numberOfLivingNeighbours(board, position)).toBe(3);
-});
-
-test("cell dies from solitude(only on neighbour)", () => {
-  const board = [
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ];
-  const position = { x: 0, y: 0 };
-  expect(gameOfLife.doesCellSurvive(board, position)).toBe(false);
-});
-
-test("cell survives(2 neighbours)", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 1, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
-  ];
-  const position = { x: 2, y: 1 };
-  expect(gameOfLife.doesCellSurvive(board, position)).toBe(true);
-});
-
-test("cell dies from overpopulation (5 neighbours)", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 1, 1, 0],
-    [0, 1, 1, 0],
-    [1, 1, 0, 0],
-  ];
-  const position = { x: 1, y: 2 };
-  expect(gameOfLife.doesCellSurvive(board, position)).toBe(false);
-});
-
-test("does cell survive row of 3 middle", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-  ];
-  const position = { x: 2, y: 2 };
-  expect(gameOfLife.doesCellSurvive(board, position)).toBe(true);
-});
-
-test("cell populates (3 neighbours)", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 1, 0, 0],
-    [0, 1, 1, 0],
-    [1, 0, 0, 0],
-  ];
-  const position = { x: 2, y: 1 };
-  expect(gameOfLife.willCellPopulate(board, position)).toBe(true);
-});
-
-test("cell is not pupulated (0 neigbours)", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [1, 0, 0, 0],
-  ];
-  const position = { x: 1, y: 0 };
-  expect(gameOfLife.willCellPopulate(board, position)).toBe(false);
-});
-
-test("row of 3 will Cell Populate side", () => {
-  const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-  ];
-  const position = { x: 1, y: 2 };
-  expect(gameOfLife.willCellPopulate(board, position)).toBe(true);
-});
-
-test("useGameBoard simple Row of Three", () => {
-  const startBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
-  ];
-  const endBoard = [
-    [0, 0, 0, 0],
-    [0, 1, 1, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ];
-  const { gameBoard, calculateNextBoard } = gameOfLife.useGameOfLife(4);
-  gameBoard.value = startBoard;
-  calculateNextBoard();
-  expect(gameBoard.value).toEqual(endBoard);
 });
 
 test("add Row To GameBoard", () => {
