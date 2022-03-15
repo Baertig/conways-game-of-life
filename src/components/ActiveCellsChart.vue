@@ -19,7 +19,10 @@ export default defineComponent({
     const gameOfLifeStore = useGameOfLife();
     const { cellCountHistory } = storeToRefs(gameOfLifeStore);
     const options = ref({
-      responsive: true
+      responsive: true,
+      animation: {
+        duration: 0
+      }
     })
     const testData = computed(() => ({
       labels: range(0, cellCountHistory.value.length),
@@ -28,6 +31,7 @@ export default defineComponent({
           label: "aktive Zellen",
           data: cellCountHistory.value,
           borderColor: 'rgb(147, 197, 253)',
+          pointRadius: 0,
         },
       ],
     }));
