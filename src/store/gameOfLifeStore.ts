@@ -1,5 +1,5 @@
 import { isModelListener } from "@vue/shared";
-import { chain, concat, range } from "lodash";
+import { chain, concat, map, range } from "lodash";
 import { defineStore } from "pinia";
 import {
   calculateNextBoard as calculateNextBoardState,
@@ -23,7 +23,8 @@ export const useGameOfLife = defineStore("Game of Life", {
   },
   actions: {
     calculateNextBoard() {
-      this.gameBoard = calculateNextBoardState(this.gameBoard);
+      const nonReactiveGameBoard = map(this.gameBoard, (row) => Uint8Array.of(...row));
+      this.gameBoard = calculateNextBoardState(nonReactiveGameBoard);
       this.cellCountHistory = concat(this.cellCountHistory, countActiveCells(this.gameBoard));
     },
     //TODO change so that the current Borad State is not mutated
