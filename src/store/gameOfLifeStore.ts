@@ -45,7 +45,7 @@ export const useGameOfLife = defineStore("Game of Life", {
 
     toggleElement({ x, y }: { x: number; y: number }) {
       const oldValue = this.gameBoard[y][x];
-      const rowCopy = [...this.gameBoard[y]];
+      const rowCopy = Uint8Array.from(this.gameBoard[y]);
       rowCopy[x] = oldValue === 1 ? 0 : 1;
       this.gameBoard[y] = rowCopy;
     },

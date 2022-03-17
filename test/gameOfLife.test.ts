@@ -1,44 +1,52 @@
 const gameOfLife = require("../src/composables/gameOfLife");
 
 test("cell with 2 neigbours", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const board = [
-    [0, 0, 0, 0],
-    [0, 1, 1, 0],
-    [0, 1, 0, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, X, X, o),
+    Uint8Array.of(o, X, o, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const position = { x: 1, y: 1 };
   expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(2);
 });
 
 test("cell with 3 neighbours and 2 non related", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const board = [
-    [1, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 1, 1, 0],
-    [0, 1, 1, 0],
+    Uint8Array.of(X, o, o, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, X, X, o),
+    Uint8Array.of(o, X, X, o),
   ];
   const position = { x: 2, y: 3 };
   expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(3);
 });
 
 test("row of 3 number of Living neighbours middle", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
   ];
   const position = { x: 2, y: 2 };
   expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(2);
 });
 
 test("row of 3 number of Living neighbours side", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const board = [
-    [0, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
   ];
   const position = { x: 1, y: 2 };
   expect(gameOfLife.calculateNumberOfLivingNeighbours(board, position)).toBe(3);
@@ -83,25 +91,28 @@ test("calculate next game Board", () => {
   const X = gameOfLife.CellState.ALIVE;
   const o = gameOfLife.CellState.DEAD;
   const gameBoadBefore = [
-    [o, o, X, o],
-    [o, o, X, o],
-    [o, o, X, o],
-    [o, o, o, o],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const gameBoardAfter = [
-    [o, o, o, o],
-    [o, X, X, X],
-    [o, o, o, o],
-    [o, o, o, o],
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, X, X, X),
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o),
   ];
   expect(gameOfLife.calculateNextBoard(gameBoadBefore)).toEqual(gameBoardAfter);
 });
+
 test("initialze Array with size 4", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const gameBoardSize4 = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o),
   ];
   expect(gameOfLife.createEmptyGameBoardArrayFromSize(4)).toEqual(gameBoardSize4);
 });
@@ -131,57 +142,61 @@ test("index: 7, size: 5x5 => x=2 and y=1", () => {
 });
 
 test("add Row To GameBoard", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const gameBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const gameBoardStep1 = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0], //-> Add empty Row to bottom
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o), //-> Add empty Row to bottom
   ];
 
   const newGameBoard1 = gameOfLife.addRowToGameBoard(gameBoard);
   expect(newGameBoard1).toEqual(gameBoardStep1);
 
   const gameBoardStep2 = [
-    [0, 0, 0, 0], // -> Add empty Row to top
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, o, o), // -> Add empty Row to top
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const newGameBoard2 = gameOfLife.addRowToGameBoard(gameBoardStep1);
   expect(newGameBoard2).toEqual(gameBoardStep2);
 });
 
 test("Add Col to Gameboard", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const gameBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
 
   const gameBoardStep1 = [
-    [0, 0, 1, 0, 0], //-> Add empty Col to end
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o, o), //-> Add empty Col to end
+    Uint8Array.of(o, o, X, o, o),
+    Uint8Array.of(o, o, X, o, o),
+    Uint8Array.of(o, o, o, o, o),
   ];
   const newGameBoard1 = gameOfLife.addColToGameBoard(gameBoard);
   expect(newGameBoard1).toEqual(gameBoardStep1);
 
   const gameBoardStep2 = [
-    [0, 0, 0, 1, 0, 0], //-> Add empty Col to start
-    [0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0],
+    Uint8Array.of(o, o, o, X, o, o), //-> Add empty Col to start
+    Uint8Array.of(o, o, o, X, o, o),
+    Uint8Array.of(o, o, o, X, o, o),
+    Uint8Array.of(o, o, o, o, o, o),
   ];
 
   const newGameBoard2 = gameOfLife.addColToGameBoard(gameBoardStep1);
@@ -190,29 +205,31 @@ test("Add Col to Gameboard", () => {
 
 //Removing Rows should be the opposite Operation to adding Rows:
 //When there are a uneven number of rows a row is added to the top.
-//-> it follows when a row is removed from a Gameboard with a even number of Rows
+//-> therefore when a row is removed from a Gameboard with a even number of Rows
 //  the top Row needs to be removed.
 test("Remove Row from Canvas", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const initGameBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const gameBoardStep1 = [
-    // [0, 0, 1, 0], //remove top Row
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
+    // Uint8Array.of(o, o, X, o), //remove top Row
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
 
   const newGameBoard1 = gameOfLife.removeRowFromGameBoard(initGameBoard);
   expect(newGameBoard1).toEqual(gameBoardStep1);
 
   const gameBoardStep2 = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    // [0, 0, 1, 0],-> remove bottom Row
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, o),
+    // Uint8Array.of(o, o, X, o),-> remove bottom Row
   ];
 
   const newGameBoard2 = gameOfLife.removeRowFromGameBoard(gameBoardStep1);
@@ -220,27 +237,29 @@ test("Remove Row from Canvas", () => {
 });
 
 test("Remove Col from Canvas", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const initGameBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 1],
-    [1, 0, 1, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, X),
+    Uint8Array.of(X, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const gameBoardStep1 = [
-    [0, 1, 0], //-> remove first Col
-    [0, 1, 1],
-    [0, 1, 0],
-    [0, 0, 0],
+    Uint8Array.of(o, X, o), //-> remove first Col
+    Uint8Array.of(o, X, X),
+    Uint8Array.of(o, X, o),
+    Uint8Array.of(o, o, o),
   ];
 
   const newGameBoard1 = gameOfLife.removeColFromGameBoard(initGameBoard);
   expect(newGameBoard1).toEqual(gameBoardStep1);
 
   const gameBoardStep2 = [
-    [0, 1], //-> remove last Col
-    [0, 1],
-    [0, 1],
-    [0, 0],
+    Uint8Array.of(o, X), //-> remove last Col
+    Uint8Array.of(o, X),
+    Uint8Array.of(o, X),
+    Uint8Array.of(o, o),
   ];
 
   const newGameBoard2 = gameOfLife.removeColFromGameBoard(gameBoardStep1);
@@ -248,11 +267,13 @@ test("Remove Col from Canvas", () => {
 });
 
 test("count ative cells", () => {
+  const X = gameOfLife.CellState.ALIVE;
+  const o = gameOfLife.CellState.DEAD;
   const gameBoard = [
-    [0, 0, 1, 0],
-    [0, 0, 1, 1],
-    [1, 0, 1, 0],
-    [0, 0, 0, 0],
+    Uint8Array.of(o, o, X, o),
+    Uint8Array.of(o, o, X, X),
+    Uint8Array.of(X, o, X, o),
+    Uint8Array.of(o, o, o, o),
   ];
   const activeCells = 5;
 
