@@ -43,6 +43,8 @@ const gridElementWidthAndHeight = computed(() => {
     height: size + "px"
   }
 })
+
+const flatGameBoard = computed(() => gameOfLifeStore.gameBoard.reduce((acc, row) => Uint8Array.of(...acc, ...row)))
 </script>
 
 <template>
@@ -52,7 +54,7 @@ const gridElementWidthAndHeight = computed(() => {
     ref="grid_container"
   >
     <div
-      v-for="(value, index) in gameOfLifeStore.gameBoard.flat()"
+      v-for="(value, index) in flatGameBoard"
       key="index"
       :class="value === 1 ? 'bg-red-700 hover:bg-blue-700' : 'bg-blue-700 hover:bg-red-700'"
       @click="toggleElement($event, index)"
